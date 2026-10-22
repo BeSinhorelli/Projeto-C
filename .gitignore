@@ -1,0 +1,14 @@
+# Executáveis
+*.exe
+*.out
+
+# Arquivos de compilação
+*.o
+build/
+
+# Configurações locais
+mouse_monitor.ini
+*.log
+
+# Pastas de IDE
+.vscode/
