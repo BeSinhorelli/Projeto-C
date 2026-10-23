@@ -1,6 +1,7 @@
 #include "window.h"
 #include "render.h"
 #include "captura.h"
+#include "config.h"
 #include "log.h"
 
 static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -17,23 +18,18 @@ static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
             int atualizou = 0;
             EventoMouse ev;
 
-            /* Drena a fila toda a cada frame */
             while (captura_pop(&g_app, &ev)) {
-                /* Atualiza posição anterior/atual */
                 g_app.mouse_anterior = g_app.mouse_atual;
                 g_app.mouse_atual = ev.posicao;
 
-                /* Atualiza botões anterior/atual */
                 g_app.botoes_anterior = g_app.botoes_atual;
                 g_app.botoes_atual = ev.botoes;
 
-                /* Conta cliques */
                 if (clique_ocorreu(g_app.botoes_anterior.esquerdo, g_app.botoes_atual.esquerdo))
                     g_app.contador_esq++;
                 if (clique_ocorreu(g_app.botoes_anterior.direito, g_app.botoes_atual.direito))
                     g_app.contador_dir++;
 
-                /* Alimenta o rastro (apenas se mudou de posição) */
                 if (ev.posicao.x != g_app.mouse_anterior.x || ev.posicao.y != g_app.mouse_anterior.y) {
                     rastro_adicionar(&g_app.rastro, ev.posicao.x, ev.posicao.y);
                 }
@@ -64,9 +60,15 @@ static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
             }
             return 0;
 
+        case WM_CLOSE:
+            /* NOVO: Salva as configurações ao fechar */
+            config_salvar(&g_app, "mouse_monitor.ini");
+            DestroyWindow(hwnd);
+            return 0;
+
         case WM_DESTROY:
             KillTimer(hwnd, ID_TIMER);
-            captura_parar(&g_app); /* Encerra a thread limpa */
+            captura_parar(&g_app); 
             PostQuitMessage(0);
             return 0;
     }

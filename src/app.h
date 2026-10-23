@@ -77,9 +77,7 @@ typedef struct {
     Config config;
 
     /* Concorrência (Thread) */
-    void *cs_fila;     /* CRITICAL_SECTION (abstrato aqui) */
     FilaEventos fila;
-    int thread_rodando;
 } AppState;
 
 extern AppState g_app;
@@ -104,7 +102,7 @@ static inline Ponto rastro_obter(const Rastro *r, int i) {
     return r->pontos[idx];
 }
 
-/* Helpers da Fila (Single Producer, Single Consumer) */
+/* Helpers da Fila */
 static inline int fila_vazia(const FilaEventos *f) {
     return f->count == 0;
 }

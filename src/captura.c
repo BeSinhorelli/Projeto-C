@@ -23,20 +23,19 @@ static DWORD WINAPI thread_captura(LPVOID lpParam) {
             fila_push(&app->fila, ev);
             LeaveCriticalSection(&g_cs);
         }
-        Sleep(1); /* 1ms */
+        Sleep(1); 
     }
     return 0;
 }
 
 int captura_iniciar(AppState *app) {
     if (g_rodando) return 0;
-
     InitializeCriticalSection(&g_cs);
     g_rodando = 1;
 
     g_thread = CreateThread(NULL, 0, thread_captura, app, 0, NULL);
     if (!g_thread) {
-        log_erro("Falha ao criar thread de captura.");
+        log_erro("Falha ao criar thread.");
         g_rodando = 0;
         return -1;
     }
@@ -46,7 +45,6 @@ int captura_iniciar(AppState *app) {
 void captura_parar(AppState *app) {
     (void)app;
     if (!g_rodando) return;
-
     g_rodando = 0;
     if (g_thread) {
         WaitForSingleObject(g_thread, INFINITE);
